@@ -1,21 +1,15 @@
-import React, {useState, useEffect} from 'react';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import Logo from '../assets/logo.svg';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import styled from "styled-components";
+import { useNavigate, Link } from "react-router-dom";
+import Logo from "../assets/logo.svg";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { registerRoute } from "../utils/APIRoutes";
 
-function Register() {
-  const [values, setValues] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    handleValidation();
-  };
+export default function Register() {
+  const navigate = useNavigate();
   const toastOptions = {
     position: "bottom-right",
     autoClose: 8000,
@@ -23,15 +17,32 @@ function Register() {
     draggable: true,
     theme: "dark",
   };
-  const handleValidation =() => {
-    const {username, email, password, confirmPassword} = values;
+  const [values, setValues] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  useEffect(() => {
+    if (localStorage.getItem("chat-app-login")) {
+      navigate("/");
+    }
+  }, []);
+
+  const handleChange = (event) => {
+    setValues({ ...values, [event.target.name]: event.target.value });
+  };
+
+  const handleValidation = () => {
+    const { password, confirmPassword, username, email } = values;
     if (password !== confirmPassword) {
       toast.error(
         "Password and confirm password should be same.",
         toastOptions
       );
       return false;
-    }else if (username.length < 3) {
+    } else if (username.length < 3) {
       toast.error(
         "Username should be greater than 3 characters.",
         toastOptions
@@ -48,50 +59,73 @@ function Register() {
       return false;
     }
 
-    return true;  
-  }
-  const handleChange = (event) => {
-    setValues({...values, [event.target.name] : event.target.values});
+    return true;
   };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (handleValidation()) {
+      const { email, username, password } = values;
+      const { data } = await axios.post(registerRoute, {
+        username,
+        email,
+        password,
+      });
+
+      if (data.status === false) {
+        toast.error(data.msg, toastOptions);
+      }
+      if (data.status === true) {
+        localStorage.setItem(
+          "chat-app-login",
+          JSON.stringify(data.user)
+        );
+        navigate("/");
+      }
+    }
+  };
+
   return (
     <>
       <FormContainer>
-        <form onSubmit={(event) => handleSubmit(event)}>
-          <div className='brand'>
-            <img src={Logo} alt="Logo" />
-            <h1>Snappy</h1> 
+        <form action="" onSubmit={(event) => handleSubmit(event)}>
+          <div className="brand">
+            <img src={Logo} alt="logo" />
+            <h1>snappy</h1>
           </div>
-          <input 
+          <input
             type="text"
-            placeholder='Username'
-            name='username'
-            onChange={(e) => handleChange(e)} 
+            placeholder="Username"
+            name="username"
+            onChange={(e) => handleChange(e)}
           />
-          <input 
+          <input
             type="email"
-            placeholder='Email'
-            name='email'
-            onChange={(e) => handleChange(e)} 
+            placeholder="Email"
+            name="email"
+            onChange={(e) => handleChange(e)}
           />
-          <input 
+          <input
             type="password"
-            placeholder='Password'
-            name='password'
-            onChange={(e) => handleChange(e)} 
+            placeholder="Password"
+            name="password"
+            onChange={(e) => handleChange(e)}
           />
-          <input 
+          <input
             type="password"
-            placeholder='Confirm Password'
-            name='password'
-            onChange={(e) => handleChange(e)} 
+            placeholder="Confirm Password"
+            name="confirmPassword"
+            onChange={(e) => handleChange(e)}
           />
-          <button type='submit'>Create User</button>
-          <span>Already have an account ? <Link to="/login">Login</Link></span>
+          <button type="submit">Create User</button>
+          <span>
+            Already have an account ? <Link to="/login">Login.</Link>
+          </span>
         </form>
       </FormContainer>
       <ToastContainer />
     </>
-  )
+  );
 }
 
 const FormContainer = styled.div`
@@ -161,5 +195,3 @@ const FormContainer = styled.div`
     }
   }
 `;
-
-export default Register
