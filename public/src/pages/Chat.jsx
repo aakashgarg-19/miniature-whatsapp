@@ -1,15 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { allUsersRoute } from "../utils/APIRoutes";
+import { allUsersRoute, host } from "../utils/APIRoutes";
 import Contacts from "../components/Contacts";
 import Welcome from "../components/Welcome";
 import ChatContainer from "../components/ChatContainer";
+import { io } from "socket.io-client";
 
 function Chat() {
+  const socket = useRef();
   const navigate = useNavigate();
   const [contacts, setContacts] = useState([]);
   const [currentUser, setCurrentUser] = useState(undefined);
@@ -30,6 +32,13 @@ function Chat() {
       setCurrUser();
     }
   }, []);
+
+  useEffect(() => {
+    if (currentUser) {
+      socket.current = io(host);
+      socket.current.emit("add-user", currentUser._id);
+    }
+  }, [currentUser]);
   
   useEffect(() => {
     if (currentUser) {
@@ -46,7 +55,7 @@ function Chat() {
   }, [currentUser]);
   const handleChatChange = (chat) => {
     setCurrentChat(chat);
-  };
+  }; 
   return (
     <>
       <Container>
@@ -55,7 +64,7 @@ function Chat() {
           {currentChat === undefined ? (
             <Welcome/>
           ): (
-            <ChatContainer currentChat={currentChat}/>
+            <ChatContainer currentChat={currentChat} socket={socket}/>
           )}
         </div>
       </Container>
