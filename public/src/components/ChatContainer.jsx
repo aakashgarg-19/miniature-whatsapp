@@ -5,25 +5,16 @@ import { sendMessageRoute, getMessageRoute } from '../utils/APIRoutes';
 import ChatInput from './ChatInput';
 import { v4 as uuidv4 } from "uuid";
 
-export default function ChatContainer({currentChat, socket}) {
-  const [currUser, setCurrUser] = useState(undefined);
+export default function ChatContainer({currentChat, currentUser, socket}) {
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [messages, setMessages] = useState([]);
   const scrollRef = useRef();
 
-  const getCurrUser = async () => {
-    setCurrUser(await JSON.parse(
-      localStorage.getItem("chat-app-login")
-    ));
-  };
-  useEffect(()=>{
-    getCurrUser();
-  },[]);
   useEffect(()=>{
     if(currentChat){
       const getMessages = async()=>{
         const res = await axios.post(getMessageRoute, {
-          from: currUser._id,
+          from: currentUser._id,
           to: currentChat._id,
         });
         setMessages(res.data);
@@ -36,11 +27,11 @@ export default function ChatContainer({currentChat, socket}) {
   const handleSendMsg = async (msg)=>{
     socket.current.emit("send-msg", {
       to: currentChat._id,
-      from: currUser._id,
+      from: currentUser._id,
       msg,
     });
     await axios.post(sendMessageRoute, {
-      from: currUser._id,
+      from: currentUser._id,
       to: currentChat._id,
       message: msg,
     });
