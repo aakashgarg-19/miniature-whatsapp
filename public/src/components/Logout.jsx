@@ -19,7 +19,8 @@ export default function Logout() {
       };
   return (
     <Button onClick={handleClick}>
-      <BiPowerOff />
+      {/* <BiPowerOff /> */}
+      <h4>Logout</h4>
     </Button>
   )
 }
@@ -29,11 +30,12 @@ const Button = styled.button`
   justify-content: center;
   align-items: center;
   padding: 0.5rem;
+  margin: 0 0 0 2rem;
   border-radius: 0.5rem;
-  background-color: #9a86f3;
+  background-color: red;
   border: none;
   cursor: pointer;
-  svg {
-    font-size: 1.3rem;
+  h4 {
+    font-size: 0.9rem;
     color: #ebe7ff;
   }`;

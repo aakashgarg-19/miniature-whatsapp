@@ -100,7 +100,7 @@ display: flex;
   align-items: center;
   flex-direction: column;
   gap: 3rem;
-  background-color: #131324;
+  background-color: mediumaquamarine;
   height: 100vh;
   width: 100vw;
   .loader {
@@ -128,11 +128,11 @@ display: flex;
       }
     }
     .selected {
-      border: 0.4rem solid #4e0eff;
+      border: 0.4rem solid #4f5749;
     }
   }
   .submit-btn {
-    background-color: #4e0eff;
+    background-color: #4f5749;
     color: white;
     padding: 1rem 2rem;
     border: none;
@@ -142,7 +142,7 @@ display: flex;
     font-size: 1rem;
     text-transform: uppercase;
     &:hover {
-      background-color: #4e0eff;
+      background-color: #4f5749;
     }
   }
 `;
