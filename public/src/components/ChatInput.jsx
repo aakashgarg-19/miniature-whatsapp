@@ -97,12 +97,12 @@ const Container = styled.div`
     display: flex;
     align-items: center;
     gap: 2rem;
-    background-color: #ffffff34;
+    background-color: white;
     input {
       width: 90%;
       height: 60%;
       background-color: transparent;
-      color: white;
+      color: #36584d;
       border: none;
       padding-left: 1rem;
       font-size: 1.2rem;

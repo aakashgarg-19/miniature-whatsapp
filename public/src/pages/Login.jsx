@@ -56,7 +56,6 @@ export default function Login() {
           "chat-app-login",
           JSON.stringify(data.user)
         );
-
         navigate("/");
       }
     }

@@ -1,14 +1,15 @@
 import axios from 'axios';
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import styled from 'styled-components';
 import { sendMessageRoute, getMessageRoute } from '../utils/APIRoutes';
-import ChatInput from './ChatInput';
-import { v4 as uuidv4 } from "uuid";
+import Messages from './Messages';
+import VideoCall from './VideoCall';
+import VideoCallBtn from './VideoCallBtn';
 
 export default function ChatContainer({currentChat, currentUser, socket}) {
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [messages, setMessages] = useState([]);
-  const scrollRef = useRef();
+  const [videocall, setVideocall] = useState(false);
 
   useEffect(()=>{
     if(currentChat){
@@ -50,9 +51,6 @@ export default function ChatContainer({currentChat, currentUser, socket}) {
   useEffect(() => {
     arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
   }, [arrivalMessage]);
-  useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
   return (
     <Container>
         <div className="chat-header">
@@ -62,21 +60,18 @@ export default function ChatContainer({currentChat, currentUser, socket}) {
                 </div>
                 <div className="username"><h3>{currentChat.username}</h3></div>
             </div>
+            <VideoCallBtn setVideocall={setVideocall} videocall={videocall}/>
         </div>
-        <div className="chat-messages">
-          {
-            messages.map((message)=>{
-              return (
-                <div ref={scrollRef} key={uuidv4()}>
-                  <div className={`message ${message.fromSelf ? "sended":"recieved"}`}>
-                    <div className="content"><p>{message.message}</p></div>
-                  </div>
-                </div>
-              )
-            })
-          }
-        </div>
-        <ChatInput handleSendMsg={handleSendMsg}/>
+        {
+          !videocall && (
+            <Messages messages={messages} handleSendMsg={handleSendMsg}/>
+          )
+        }
+        {
+          videocall && (
+            <VideoCall/>
+          )
+        }
     </Container>
   )
 }
@@ -94,6 +89,7 @@ display: grid;
     justify-content: space-between;
     align-items: center;
     padding: 0 2rem;
+    padding-top: 20px;
     .user-details {
       display: flex;
       align-items: center;
@@ -107,48 +103,6 @@ display: grid;
         h3 {
           color: white;
         }
-      }
-    }
-  }
-  .chat-messages {
-    padding: 1rem 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    overflow: auto;
-    &::-webkit-scrollbar {
-      width: 0.2rem;
-      &-thumb {
-        background-color: #ffffff39;
-        width: 0.1rem;
-        border-radius: 1rem;
-      }
-    }
-    .message {
-      display: flex;
-      align-items: center;
-      .content {
-        max-width: 40%;
-        overflow-wrap: break-word;
-        padding: 1rem;
-        font-size: 1.1rem;
-        border-radius: 1rem;
-        color: #d1d1d1;
-        @media screen and (min-width: 720px) and (max-width: 1080px) {
-          max-width: 70%;
-        }
-      }
-    }
-    .sended {
-      justify-content: flex-end;
-      .content {
-        background-color: #4f04ff21;
-      }
-    }
-    .recieved {
-      justify-content: flex-start;
-      .content {
-        background-color: #9900ff20;
       }
     }
   }
