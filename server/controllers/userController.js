@@ -32,16 +32,17 @@ module.exports.login = async (req,res,next) => {
         }
         const isPasswordValid = await bcrypt.compare(password,user.password);
         if (!isPasswordValid){
-            
             return res.json({ msg: "Incorrect Username or Password", status: false });
         }
-        
         delete user.password;
         return res.json({ user, status: true});
     }catch(err){
         next(err);
     }
 };
+// module.exports.login = async (req,res,next) => {
+//     next();
+// };
 
 module.exports.setAvatar = async (req,res,next) => {
     try{
@@ -82,4 +83,4 @@ module.exports.logOut = (req, res, next) => {
     } catch (ex) {
       next(ex);
     }
-  };
+};
